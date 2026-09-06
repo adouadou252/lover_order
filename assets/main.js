@@ -349,10 +349,10 @@
     updateTheme();
     var totals = getTotals();
     var isBoy = getActiveRole() === 'boy';
-    var meta = zodiacMeta[state.zodiac];
-    var symbol = meta ? meta.symbol + ' ' : '';
-    var headerRoleText = isBoy ? '👦🏻 男朋友点单' : '👧🏻 女朋友点单';
-    $('#headerMeta').textContent = headerRoleText + ' · ' + symbol + (state.zodiac || '未选择星座');
+    var headerMeta = $('#headerMeta');
+    if (headerMeta) {
+      headerMeta.textContent = isBoy ? '👦🏻 男朋友点单' : '👧🏻 女朋友点单';
+    }
     $('#itemCount').textContent = totals.count + ' 道';
     $('#totalPrice').textContent = '❤️ ' + totals.total;
 
