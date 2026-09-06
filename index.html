@@ -80,6 +80,18 @@
       </div>
     </section>
   </main>
+  <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden />
+  <input type="file" id="albumInput" accept="image/*" hidden />
+  <div class="custom-dish-modal hidden" id="customDishModal" role="dialog" aria-modal="true" aria-labelledby="customDishTitle">
+    <div class="custom-dish-overlay" data-custom-action="cancel"></div>
+    <div class="custom-dish-sheet">
+      <div class="custom-dish-head"><div><span class="mini-label">CUSTOM DISH</span><h2 id="customDishTitle">拍一道菜</h2></div><button type="button" class="custom-close" data-custom-action="cancel" aria-label="关闭">×</button></div>
+      <img id="customDishPreview" class="custom-dish-preview" alt="待添加菜品照片" />
+      <label class="custom-field">菜名<input id="customDishName" type="text" maxlength="20" placeholder="给这道菜起个名字" /></label>
+      <label class="custom-field">爱意值<input id="customDishPrice" type="number" min="0" max="999" value="20" inputmode="numeric" /></label>
+      <div class="custom-dish-actions"><button type="button" class="secondary-button" data-custom-action="retake">重拍</button><button type="button" class="secondary-button" data-custom-action="album">从相册选择</button><button type="button" class="primary-button" id="confirmCustomDish">确认添加</button></div>
+    </div>
+  </div>
   <script src="./assets/main.js"></script>
 </body>
 </html>

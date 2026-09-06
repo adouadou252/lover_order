@@ -2,6 +2,7 @@
   'use strict';
 
   var STORAGE_KEY = 'couple-order-draft-v2';
+  var CUSTOM_DISHES_KEY = 'couple-order-custom-dishes-v1';
   var zodiacData = ['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'];
   var zodiacMeta = {
     '白羊座': {
@@ -159,6 +160,8 @@
   ];
   var zodiacRecommend = { '白羊座': 'pizza', '金牛座': 'pasta', '双子座': 'tea', '巨蟹座': 'ramen', '狮子座': 'pizza', '处女座': 'pasta', '天秤座': 'cake', '天蝎座': 'ramen', '射手座': 'fries', '摩羯座': 'ramen', '水瓶座': 'tea', '双鱼座': 'cake' };
   var state = { gender: '', zodiac: '', category: '全部', pageIndex: 0, orders: { boy: {}, girl: {} } };
+  var customDishes = [];
+  var pendingCustomImage = '';
   var turning = false;
   var suppressBookClick = false;
   var dragStartX = 0;
@@ -182,7 +185,53 @@
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ gender: state.gender, zodiac: state.zodiac, orders: state.orders })); } catch (error) {}
   }
 
+  function loadCustomDishes() {
+    try {
+      var saved = JSON.parse(window.localStorage.getItem(CUSTOM_DISHES_KEY) || '[]');
+      if (Array.isArray(saved)) {
+        customDishes = saved;
+      } else {
+        customDishes = [];
+      }
+    } catch (error) {
+      customDishes = [];
+    }
+  }
+
+  function saveCustomDishes() {
+    try {
+      window.localStorage.setItem(CUSTOM_DISHES_KEY, JSON.stringify(customDishes));
+      return true;
+    } catch (error) {
+      window.alert('存储空间不足，请删除部分自定义菜品后再试');
+      return false;
+    }
+  }
+
+  function getAllDishes() {
+    return dishes.concat(customDishes);
+  }
+
+  function showToast(message) {
+    var toast = document.createElement('div');
+    toast.className = 'custom-toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    window.setTimeout(function () {
+      toast.classList.add('show');
+    }, 20);
+    window.setTimeout(function () {
+      toast.classList.remove('show');
+      window.setTimeout(function () {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 250);
+    }, 1800);
+  }
+
   function loadState() {
+    loadCustomDishes();
     try {
       var saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || 'null');
       if (saved) { state.gender = saved.gender || ''; state.zodiac = saved.zodiac || ''; state.orders = saved.orders || { boy: {}, girl: {} }; }
@@ -213,8 +262,14 @@
     startOrderButton.disabled = !ready;
     startOrderButton.setAttribute('aria-disabled', String(!ready));
   }
-  function filteredDishes() { return state.category === '全部' ? dishes : dishes.filter(function (dish) { return dish.category === state.category; }); }
-  function getDish(id) { return dishes.filter(function (dish) { return dish.id === id; })[0]; }
+  function filteredDishes() {
+    var all = getAllDishes();
+    return state.category === '全部' ? all : all.filter(function (dish) { return dish.category === state.category; });
+  }
+  function getDish(id) {
+    var all = getAllDishes();
+    return all.filter(function (dish) { return dish.id === id; })[0];
+  }
 
   function getDishArt(id) {
     var art = {
@@ -252,16 +307,45 @@
     return meta ? meta.badge : '今日推荐';
   }
 
-  function renderBookPage(dish, side) {
-    if (!dish) return '<div class="page-empty"><span>—</span><p>这一页暂时空着</p></div>';
+  function getBookItems() {
+    var list = filteredDishes().slice();
+    if (state.category !== '全部') {
+      list.push({ isAddCard: true });
+    }
+    return list;
+  }
+
+  function renderAddCard() {
+    return '<div class="book-dish book-add-card" data-action="open-camera">' +
+      '<div class="add-card-circle"><span class="add-card-plus">＋</span></div>' +
+      '<strong class="add-card-title">拍一道菜</strong>' +
+      '<small class="add-card-desc">添加属于你们的专属美味</small>' +
+      '<button type="button" class="book-count-btn add-card-btn" data-action="open-camera">立即拍照</button>' +
+      '</div>';
+  }
+
+  function renderBookPage(item, side) {
+    if (!item) return '<div class="page-empty"><span>—</span><p>这一页暂时空着</p></div>';
+    if (item.isAddCard) return renderAddCard();
+
+    var dish = item;
     var count = state.orders[getActiveRole()][dish.id] || 0;
     var meta = zodiacMeta[state.zodiac];
     var isRecommended = meta ? meta.dishId === dish.id : (zodiacRecommend[state.zodiac] === dish.id);
     var badgeText = getZodiacBadge(state.zodiac);
-    return '<div class="book-dish" data-dish-id="' + dish.id + '">' +
+    var illustrationHtml = dish.isCustom ?
+      '<span class="dish-illustration dish-illustration-custom"><img src="' + dish.image + '" alt="' + dish.name + '" /></span>' :
+      '<span class="dish-illustration illustration-' + dish.id + '">' + getDishArt(dish.id) + '</span>';
+
+    var deleteBtnHtml = dish.isCustom ?
+      '<button type="button" class="dish-delete-btn" data-action="delete-dish" data-id="' + dish.id + '" aria-label="删除菜品 ' + dish.name + '">×</button>' :
+      '';
+
+    return '<div class="book-dish' + (dish.isCustom ? ' book-dish-custom' : '') + '" data-dish-id="' + dish.id + '">' +
+      deleteBtnHtml +
       (isRecommended ? '<span class="recommend-badge">' + badgeText + '</span>' : '') +
-      '<span class="dish-illustration illustration-' + dish.id + '">' + getDishArt(dish.id) + '</span>' +
-      '<strong>' + dish.name + '</strong><small>' + dish.desc + '</small><em>❤️ ' + dish.price + ' 爱意值</em>' +
+      illustrationHtml +
+      '<strong>' + dish.name + '</strong><small>' + (dish.desc || '专属自定义美味') + '</small><em>❤️ ' + dish.price + ' 爱意值</em>' +
       (count > 0 ?
         '<div class="book-counter" role="group" aria-label="' + dish.name + '数量调整">' +
           '<button type="button" class="book-counter-btn book-btn-minus" data-action="minus" aria-label="减少一份 ' + dish.name + '">−</button>' +
@@ -279,17 +363,17 @@
       $('#recommendation').textContent = '★ ' + meta.symbol + ' ' + state.zodiac + ' · 今日美食签：' + meta.fortune;
     } else {
       var dish = getDish(zodiacRecommend[state.zodiac] || 'pasta');
-      $('#recommendation').textContent = state.zodiac ? '★ ' + state.zodiac + '今日推荐：' + dish.name : '★ 今日推荐：' + dish.name;
+      $('#recommendation').textContent = state.zodiac ? '★ ' + state.zodiac + '今日推荐：' + (dish ? dish.name : '') : '★ 今日推荐：' + (dish ? dish.name : '');
     }
   }
 
   function renderDishes() {
-    var menu = filteredDishes();
-    var totalPages = Math.max(1, Math.ceil(menu.length / 2));
+    var items = getBookItems();
+    var totalPages = Math.max(1, Math.ceil(items.length / 2));
     if (state.pageIndex >= totalPages) state.pageIndex = totalPages - 1;
     if (state.pageIndex < 0) state.pageIndex = 0;
-    bookPageLeft.innerHTML = renderBookPage(menu[state.pageIndex * 2], 'left');
-    bookPageRight.innerHTML = renderBookPage(menu[state.pageIndex * 2 + 1], 'right');
+    bookPageLeft.innerHTML = renderBookPage(items[state.pageIndex * 2], 'left');
+    bookPageRight.innerHTML = renderBookPage(items[state.pageIndex * 2 + 1], 'right');
     $('#bookPageLabel').textContent = (state.pageIndex + 1) + ' / ' + totalPages;
     $('#bookPrev').disabled = state.pageIndex === 0;
     $('#bookNext').disabled = state.pageIndex === totalPages - 1;
@@ -297,7 +381,7 @@
   }
 
   function turnPage(direction) {
-    var totalPages = Math.max(1, Math.ceil(filteredDishes().length / 2));
+    var totalPages = Math.max(1, Math.ceil(getBookItems().length / 2));
     var nextIndex = state.pageIndex + direction;
     if (turning || nextIndex < 0 || nextIndex >= totalPages) return;
     turning = true; pageTurnSheet.className = 'page-turn-sheet ' + (direction > 0 ? 'turn-forward' : 'turn-back');
@@ -479,24 +563,293 @@
     if (window.xhs && window.xhs.miniTool && window.xhs.miniTool.postNote) { window.xhs.miniTool.postNote({ title: '今日点单', content: '今天这顿，值得记住。', pageType: 'photo_publish', mediaInfo: { image_resources: [{ url: data }] } }).catch(function () { window.alert('分享失败，请稍后重试'); }); } else { window.alert('分享功能需在小红书小工具容器中使用'); }
   }
 
+  function getOrientation(file, callback) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var view = new DataView(e.target.result);
+      if (view.getUint16(0, false) !== 0xFFD8) {
+        callback(1);
+        return;
+      }
+      var length = view.byteLength;
+      var offset = 2;
+      while (offset < length) {
+        if (view.getUint16(offset + 2, false) <= 8) {
+          callback(1);
+          return;
+        }
+        var marker = view.getUint16(offset, false);
+        offset += 2;
+        if (marker === 0xFFE1) {
+          if (view.getUint32(offset += 2, false) !== 0x45786966) {
+            callback(1);
+            return;
+          }
+          var little = view.getUint16(offset += 6, false) === 0x4949;
+          offset += view.getUint32(offset + 4, little);
+          var tags = view.getUint16(offset, little);
+          offset += 2;
+          for (var i = 0; i < tags; i += 1) {
+            if (view.getUint16(offset + (i * 12), little) === 0x0112) {
+              callback(view.getUint16(offset + (i * 12) + 8, little));
+              return;
+            }
+          }
+        } else if ((marker & 0xFF00) !== 0xFF00) {
+          break;
+        } else {
+          offset += view.getUint16(offset, false);
+        }
+      }
+      callback(1);
+    };
+    reader.onerror = function () {
+      callback(1);
+    };
+    reader.readAsArrayBuffer(file.slice(0, 64 * 1024));
+  }
+
+  function compressWithImageBitmap(file, callback) {
+    if (typeof window.createImageBitmap !== 'function') {
+      return false;
+    }
+    try {
+      window.createImageBitmap(file, { imageOrientation: 'from-image' }).then(function (bitmap) {
+        var maxSide = 800;
+        var width = bitmap.width;
+        var height = bitmap.height;
+        if (width > maxSide || height > maxSide) {
+          if (width >= height) {
+            height = Math.round((height * maxSide) / width);
+            width = maxSide;
+          } else {
+            width = Math.round((width * maxSide) / height);
+            height = maxSide;
+          }
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(bitmap, 0, 0, width, height);
+        if (typeof bitmap.close === 'function') {
+          bitmap.close();
+        }
+        callback(null, canvas.toDataURL('image/jpeg', 0.7));
+      }).catch(function () {
+        compressWithCanvasDirect(file, callback);
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function compressWithCanvasDirect(file, callback) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        var maxSide = 800;
+        var width = img.naturalWidth || img.width;
+        var height = img.naturalHeight || img.height;
+        if (width > maxSide || height > maxSide) {
+          if (width >= height) {
+            height = Math.round((height * maxSide) / width);
+            width = maxSide;
+          } else {
+            width = Math.round((width * maxSide) / height);
+            height = maxSide;
+          }
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        callback(null, canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = function () {
+        callback(new Error('图片解析失败'));
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = function () {
+      callback(new Error('读取图片文件失败'));
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function compressImage(file, callback) {
+    if (compressWithImageBitmap(file, callback)) {
+      return;
+    }
+    compressWithCanvasDirect(file, callback);
+  }
+
+  function openCamera() {
+    var cameraInput = $('#cameraInput');
+    if (cameraInput) {
+      cameraInput.value = '';
+      cameraInput.click();
+    }
+  }
+
+  function openAlbum() {
+    var albumInput = $('#albumInput');
+    if (albumInput) {
+      albumInput.value = '';
+      albumInput.click();
+    }
+  }
+
+  function openCustomDishModal(imageData) {
+    pendingCustomImage = imageData;
+    var modal = $('#customDishModal');
+    var preview = $('#customDishPreview');
+    var nameInput = $('#customDishName');
+    var priceInput = $('#customDishPrice');
+    if (!modal || !preview || !nameInput || !priceInput) return;
+    preview.src = imageData;
+    nameInput.value = '';
+    priceInput.value = '20';
+    modal.classList.remove('hidden');
+    window.setTimeout(function () {
+      nameInput.focus();
+    }, 100);
+  }
+
+  function closeCustomDishModal() {
+    var modal = $('#customDishModal');
+    if (modal) modal.classList.add('hidden');
+    pendingCustomImage = '';
+  }
+
+  function handleImageSelected(file) {
+    if (!file) return;
+    compressImage(file, function (err, compressedData) {
+      if (err || !compressedData) {
+        window.alert('图片处理失败，请重试或从相册选择');
+        return;
+      }
+      openCustomDishModal(compressedData);
+    });
+  }
+
+  function saveCustomDish() {
+    var nameInput = $('#customDishName');
+    var priceInput = $('#customDishPrice');
+    var name = nameInput ? nameInput.value.trim() : '';
+    if (!name) {
+      window.alert('请给这道菜起个名字');
+      if (nameInput) nameInput.focus();
+      return;
+    }
+    if (!pendingCustomImage) {
+      window.alert('请先拍摄或选择菜品照片');
+      return;
+    }
+    var priceNum = priceInput ? parseInt(priceInput.value, 10) : 20;
+    if (isNaN(priceNum) || priceNum < 0) {
+      priceNum = 20;
+    }
+    var targetCategory = state.category === '全部' ? '主食' : state.category;
+    if (state.category !== targetCategory) {
+      state.category = targetCategory;
+      renderCategories();
+    }
+    var newDish = {
+      id: 'custom_' + Date.now(),
+      name: name,
+      desc: 'TA的专属私房菜',
+      price: priceNum,
+      category: targetCategory,
+      image: pendingCustomImage,
+      isCustom: true
+    };
+
+    customDishes.push(newDish);
+    var savedOk = saveCustomDishes();
+    if (!savedOk) {
+      customDishes.pop();
+      return;
+    }
+
+    closeCustomDishModal();
+    showToast('已添加到 ' + targetCategory);
+
+    var items = getBookItems();
+    var totalPages = Math.max(1, Math.ceil(items.length / 2));
+    state.pageIndex = totalPages - 1;
+    renderDishes();
+  }
+
+  function deleteCustomDish(dishId) {
+    var dish = getDish(dishId);
+    var dishName = dish ? dish.name : '该菜品';
+    if (!window.confirm('确定要删除自定义菜品「' + dishName + '」吗？')) {
+      return;
+    }
+    customDishes = customDishes.filter(function (item) {
+      return item.id !== dishId;
+    });
+    saveCustomDishes();
+
+    ['boy', 'girl'].forEach(function (role) {
+      if (state.orders[role] && state.orders[role][dishId]) {
+        delete state.orders[role][dishId];
+      }
+    });
+    saveState();
+
+    var items = getBookItems();
+    var totalPages = Math.max(1, Math.ceil(items.length / 2));
+    if (state.pageIndex >= totalPages) {
+      state.pageIndex = totalPages - 1;
+    }
+    renderDishes();
+    renderOrder();
+    showToast('已删除菜品');
+  }
+
   function bindBookInteraction() {
     dishScroller.addEventListener('pointerdown', function (event) { dragging = true; dragStartX = event.clientX; });
     dishScroller.addEventListener('pointerup', function (event) { if (!dragging) return; dragging = false; var distance = event.clientX - dragStartX; if (Math.abs(distance) > 45) { suppressBookClick = true; turnPage(distance < 0 ? 1 : -1); window.setTimeout(function () { suppressBookClick = false; }, 80); } });
     dishScroller.addEventListener('pointercancel', function () { dragging = false; });
     dishScroller.addEventListener('click', function (event) {
       if (suppressBookClick) return;
+
+      var openCameraBtn = event.target.closest ? event.target.closest('[data-action="open-camera"]') : null;
+      if (openCameraBtn) {
+        openCamera();
+        return;
+      }
+
+      var deleteBtn = event.target.closest ? event.target.closest('[data-action="delete-dish"]') : null;
+      if (deleteBtn) {
+        event.stopPropagation();
+        var dishId = deleteBtn.getAttribute('data-id');
+        if (dishId) deleteCustomDish(dishId);
+        return;
+      }
+
       var card = event.target.closest ? event.target.closest('.book-dish') : null;
       if (!card) return;
+      if (card.classList.contains('book-add-card')) {
+        openCamera();
+        return;
+      }
       var index = card.parentNode === bookPageLeft ? state.pageIndex * 2 : state.pageIndex * 2 + 1;
-      var dish = filteredDishes()[index];
-      if (!dish) return;
+      var item = getBookItems()[index];
+      if (!item || item.isAddCard) return;
+      var dish = item;
 
       var actionBtn = event.target.closest ? event.target.closest('[data-action]') : null;
       if (actionBtn) {
         var action = actionBtn.getAttribute('data-action');
         if (action === 'minus') {
           removeDish(dish);
-        } else {
+        } else if (action === 'plus') {
           addDish(dish);
         }
         return;
@@ -508,8 +861,47 @@
     $('#bookPrev').addEventListener('click', function (event) { event.stopPropagation(); turnPage(-1); }); $('#bookNext').addEventListener('click', function (event) { event.stopPropagation(); turnPage(1); });
   }
 
+  function bindCustomDishEvents() {
+    var cameraInput = $('#cameraInput');
+    var albumInput = $('#albumInput');
+    if (cameraInput) {
+      cameraInput.addEventListener('change', function (e) {
+        var file = e.target.files && e.target.files[0];
+        handleImageSelected(file);
+      });
+    }
+    if (albumInput) {
+      albumInput.addEventListener('change', function (e) {
+        var file = e.target.files && e.target.files[0];
+        handleImageSelected(file);
+      });
+    }
+
+    var modal = $('#customDishModal');
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        var actionEl = e.target.closest ? e.target.closest('[data-custom-action]') : null;
+        if (!actionEl) return;
+        var action = actionEl.getAttribute('data-custom-action');
+        if (action === 'cancel') {
+          closeCustomDishModal();
+        } else if (action === 'retake') {
+          openCamera();
+        } else if (action === 'album') {
+          openAlbum();
+        }
+      });
+    }
+
+    var confirmBtn = $('#confirmCustomDish');
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', saveCustomDish);
+    }
+  }
+
   function init() {
     loadState();
+    bindCustomDishEvents();
     document.querySelectorAll('[data-gender]').forEach(function (button) {
       button.addEventListener('click', function () {
         state.gender = button.getAttribute('data-gender');
