@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>点单</title>
+  <link rel="stylesheet" href="./assets/style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="view view-onboarding" id="onboardingView" aria-labelledby="welcomeTitle">
+      <div class="onboarding-inner">
+        <p class="eyebrow">OUR TABLE</p>
+        <h1 id="welcomeTitle">今天吃什么</h1>
+        <p class="welcome-note">先选择你的身份和星座，开始记录这顿饭。</p>
+        <div class="profile-card">
+          <div class="section-heading"><span>01</span><div><h2>点单者</h2><p>选择后进入点单页面</p></div></div>
+          <div class="gender-options" id="genderOptions">
+            <button class="choice-card gender-boy" type="button" data-gender="boy"><strong>男生</strong><small>由我开始点单</small></button>
+            <button class="choice-card gender-girl" type="button" data-gender="girl"><strong>女生</strong><small>由我开始点单</small></button>
+          </div>
+          <div class="section-heading zodiac-heading"><span>02</span><div><h2>星座</h2><p>用于生成今日推荐</p></div></div>
+          <div class="zodiac-grid" id="zodiacGrid"></div>
+          <p class="selection-hint" id="selectionHint">请选择性别和星座后开始点单</p>
+          <button class="start-order-button" type="button" id="startOrderButton" disabled>开始点单 <b>→</b></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="view view-order hidden" id="orderView" aria-labelledby="orderTitle">
+      <header class="order-header">
+        <button class="text-button" type="button" id="backButton">‹ 返回</button>
+        <div class="header-center"><span class="eyebrow">OUR TABLE</span><h1 id="orderTitle">点单</h1></div>
+        <div class="header-meta" id="headerMeta">男生 · 未选择星座</div>
+      </header>
+      <div class="order-content">
+        <section class="selected-section" aria-labelledby="selectedTitle">
+          <div class="section-title-row"><div><span class="mini-label">ORDER BOARD</span><h2 id="selectedTitle">已选菜品</h2></div><span class="selected-count" id="itemCount">0 道</span></div>
+          <div class="selected-list" id="selectedList"><p class="empty-note" id="emptyNote">还没有选择菜品<br />从下方菜单开始添加</p></div>
+          <div class="selected-total"><span>合计爱意</span><strong id="totalPrice">❤️ 0</strong></div>
+          <p class="love-note">爱意值只记录心意，不代表真实花费</p>
+        </section>
+        <section class="menu-section" aria-labelledby="menuTitle">
+          <div class="menu-heading"><div><span class="mini-label">MENU</span><h2 id="menuTitle">选择菜品</h2></div><span class="swipe-tip">左右滑动翻页</span></div>
+          <div class="recommendation" id="recommendation"></div>
+          <div class="category-tabs" id="categoryTabs"></div>
+          <div class="book-menu" id="dishScroller" aria-label="菜单">
+            <div class="book-shadow"></div><div class="book-page book-page-left" id="bookPageLeft"></div><div class="book-spine"></div><div class="book-page book-page-right" id="bookPageRight"></div><div class="page-turn-sheet" id="pageTurnSheet"></div>
+            <button class="book-arrow book-arrow-left" type="button" id="bookPrev" aria-label="上一页">‹</button><button class="book-arrow book-arrow-right" type="button" id="bookNext" aria-label="下一页">›</button>
+          </div>
+          <div class="book-footer"><span id="bookPageLabel">1 / 1</span><span>点击菜品加入清单</span></div>
+        </section>
+      </div>
+      <div class="bottom-bar"><button class="primary-button" type="button" id="finishButton">点好了 <b>→</b></button></div>
+    </section>
+
+    <section class="view view-complete hidden" id="completeView" aria-labelledby="completeTitle">
+      <div class="receipt-wrap">
+        <p class="eyebrow">ORDER RECEIPT</p>
+        <h1 id="completeTitle">订单已生成</h1>
+        <p class="complete-note">这一顿，值得好好吃完。</p>
+        <div class="receipt-machine" aria-hidden="true">
+          <div class="receipt-machine-top"><span></span><i></i><b></b></div>
+          <div class="receipt-slot"><span></span></div>
+        </div>
+        <div class="receipt-stage">
+          <div class="final-card" id="receiptCard">
+            <div class="receipt-content">
+              <img class="receipt-photo-bg" id="receiptPhotoBg" alt="" aria-hidden="true" />
+              <div class="receipt-brand"><span>OUR TABLE</span><small>纪念小票</small></div>
+              <div class="receipt-meta"><span id="finalDate">2026.09.05</span><span id="finalZodiac">金牛座</span></div>
+              <div id="finalOrderList" class="final-order-list"></div>
+              <div class="final-total"><span>总计爱意</span><strong id="finalTotal">❤️ 0</strong></div>
+              <p class="receipt-line">今天这顿，值得记住。</p>
+            </div>
+            <div class="receipt-actions"><button type="button" id="saveImageButton">保存图片</button><button type="button" id="shareButton">分享</button></div>
+          </div>
+        </div>
+        <button class="restart-link" type="button" id="restartButton">重新点单</button>
+      </div>
+    </section>
+  </main>
+  <script src="./assets/main.js"></script>
+</body>
+</html>
