@@ -1,3 +1,19 @@
+:root {
+  --accent-color: #2d4a3e;
+  --accent-hover: #1e352b;
+  --accent-subtle: #e7eee8;
+  --accent-badge-bg: #e7d8aa;
+  --accent-badge-color: #725d2a;
+}
+
+body.theme-girl {
+  --accent-color: #8a494d;
+  --accent-hover: #6e373b;
+  --accent-subtle: #f4e8e9;
+  --accent-badge-bg: #eddcdb;
+  --accent-badge-color: #703337;
+}
+
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body { position: relative; margin: 0; background: #f5f1eb; color: #302f2b; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
@@ -12,14 +28,14 @@ body { position: relative; margin: 0; background: #f5f1eb; color: #302f2b; font-
 .view-complete:before { background: #f5f1eb; opacity: 1; }
 .view-complete:after { background: rgba(245,241,235,.76); }
 button { border: 0; font: inherit; color: inherit; cursor: pointer; }
-button:focus { outline: 2px solid #2d4a3e; outline-offset: 3px; }
+button:focus { outline: 2px solid var(--accent-color); outline-offset: 3px; }
 .hidden { display: none !important; }
 .app-shell { min-height: 100vh; min-height: var(--app-height, 100vh); }
 .view { min-height: 100vh; min-height: var(--app-height, 100vh); }
 .eyebrow, .mini-label { display: block; color: #7b8277; font-size: 10px; letter-spacing: 2px; font-weight: 700; }
 .view-onboarding { padding: 58px 22px 32px; background: transparent; }
 .onboarding-inner, .receipt-wrap { max-width: 520px; margin: 0 auto; }
-.view-onboarding h1 { margin: 14px 0 10px; color: #2d4a3e; font-family: Georgia, serif; font-size: 38px; font-weight: 600; letter-spacing: -1px; }
+.view-onboarding h1 { margin: 14px 0 10px; color: var(--accent-color); font-family: Georgia, serif; font-size: 38px; font-weight: 600; letter-spacing: -1px; }
 .welcome-note { margin: 0 0 28px; color: #77776f; font-size: 14px; line-height: 1.7; }
 .profile-card { padding: 22px 18px 18px; background: #fffdfa; border: 1px solid #d8d4cb; border-radius: 12px; box-shadow: 0 8px 20px rgba(48,47,43,.06); }
 .section-heading { display: flex; align-items: center; margin-bottom: 15px; }
@@ -29,25 +45,25 @@ button:focus { outline: 2px solid #2d4a3e; outline-offset: 3px; }
 .gender-options { display: flex; margin-bottom: 28px; }
 .gender-options > * + * { margin-left: 10px; }
 .choice-card { flex: 1; min-height: 76px; padding: 15px; background: #f1eee7; border: 1px solid #d8d4cb; border-radius: 10px; text-align: left; }
-.choice-card.active, .choice-card:active { background: #e7eee8; border-color: #2d4a3e; }
+.choice-card.active, .choice-card:active { background: var(--accent-subtle); border-color: var(--accent-color); }
 .choice-card strong, .choice-card small { display: block; }
-.choice-card strong { margin-bottom: 6px; color: #2d4a3e; font-size: 16px; }
+.choice-card strong { margin-bottom: 6px; color: var(--accent-color); font-size: 16px; }
 .choice-card small { color: #85857d; font-size: 11px; }
 .zodiac-heading { margin-bottom: 13px; }
 .zodiac-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-gap: 8px; }
 .zodiac-item { padding: 9px 2px; background: #f7f5f0; border: 1px solid #e1ddd4; border-radius: 7px; color: #77776f; font-size: 11px; }
-.zodiac-item.active { background: #2d4a3e; border-color: #2d4a3e; color: #fffdfa; }
+.zodiac-item.active { background: var(--accent-color); border-color: var(--accent-color); color: #fffdfa; }
 .selection-hint { margin: 14px 0 12px; color: #9b9a91; font-size: 11px; text-align: center; }
-.start-order-button { display: block; width: 100%; min-height: 44px; border-radius: 9px; background: #2d4a3e; color: #fffdfa; font-size: 13px; font-weight: 700; transition: opacity .2s ease, transform .2s ease; }
+.start-order-button { display: block; width: 100%; min-height: 44px; border-radius: 9px; background: var(--accent-color); color: #fffdfa; font-size: 13px; font-weight: 700; transition: opacity .2s ease, transform .2s ease, background-color .2s ease; }
 .start-order-button b { margin-left: 7px; font-size: 16px; }
 .start-order-button:disabled { cursor: not-allowed; opacity: .38; }
 .start-order-button:not(:disabled):active { transform: scale(.98); }
 .view-order { padding-bottom: 88px; background: transparent; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .order-header { display: flex; align-items: center; justify-content: space-between; min-height: 64px; padding: calc(12px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 20px 12px; border-bottom: 1px solid #dedbd3; background: #fff; }
 .header-center { text-align: center; }
-.header-center h1 { margin: 4px 0 0; color: #2d4a3e; font-family: Georgia, serif; font-size: 20px; font-weight: 600; }
+.header-center h1 { margin: 4px 0 0; color: var(--accent-color); font-family: Georgia, serif; font-size: 20px; font-weight: 600; }
 .text-button { padding: 8px 0; background: none; color: #6e756c; font-size: 12px; }
-.header-meta { max-width: 105px; color: #72766f; font-size: 11px; line-height: 1.4; text-align: right; }
+.header-meta { max-width: 135px; color: #72766f; font-size: 11px; line-height: 1.4; text-align: right; }
 .order-content { padding: 0 20px; }
 .selected-section { margin: 18px auto 0; padding: 17px 15px 14px; max-width: 520px; background: #f5f1eb; border: 1px solid #d8d4cb; border-radius: 12px; }
 .section-title-row, .selected-total, .selected-row, .menu-heading, .book-footer, .receipt-brand, .receipt-meta, .final-total, .receipt-actions { display: flex; align-items: center; justify-content: space-between; }
@@ -67,7 +83,7 @@ button:focus { outline: 2px solid #2d4a3e; outline-offset: 3px; }
 .category-tabs { display: flex; overflow-x: auto; margin: 0 0 13px; white-space: nowrap; scrollbar-width: none; }
 .category-tabs::-webkit-scrollbar { display: none; }
 .category-tabs button { margin-right: 8px; padding: 7px 13px; background: #f2f1ed; border: 1px solid #ddd9d1; border-radius: 7px; color: #777a73; font-size: 11px; }
-.category-tabs button.active { background: #2d4a3e; border-color: #2d4a3e; color: #fff; }
+.category-tabs button.active { background: var(--accent-color); border-color: var(--accent-color); color: #fff; }
 .book-menu { position: relative; display: flex; min-height: 275px; padding: 0 7px 12px; perspective: 900px; touch-action: pan-y; }
 .book-shadow { position: absolute; right: 8px; bottom: 4px; left: 8px; height: 10px; border-radius: 50%; background: rgba(48,47,43,.16); filter: blur(5px); }
 .book-page { position: relative; z-index: 1; flex: 1; min-width: 0; overflow: hidden; padding: 12px 10px 14px; background: #fffdfa; border: 1px solid #cfcac0; box-shadow: 0 3px 0 #e9e5dd; }
@@ -76,7 +92,7 @@ button:focus { outline: 2px solid #2d4a3e; outline-offset: 3px; }
 .book-page:before { content: ''; position: absolute; top: 10px; right: 10px; left: 10px; height: 1px; background: #eeeae2; box-shadow: 0 236px 0 #eeeae2; }
 .book-spine { position: absolute; z-index: 3; top: 1px; bottom: 10px; left: 50%; width: 8px; transform: translateX(-50%); background: #c7a45b; border: 1px solid #9d7b38; border-top: 0; border-bottom: 0; }
 .book-dish { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; min-height: 242px; padding: 0; background: transparent; text-align: center; }
-.recommend-badge { position: absolute; top: 0; right: 0; padding: 3px 5px; background: #e7d8aa; color: #725d2a; font-size: 9px; }
+.recommend-badge { position: absolute; top: 0; right: 0; padding: 3px 6px; background: var(--accent-badge-bg); color: var(--accent-badge-color); font-size: 9px; font-weight: 600; border-radius: 0 0 0 6px; letter-spacing: .2px; }
 .dish-illustration { position: relative; display: flex; align-items: center; justify-content: center; width: 78px; height: 68px; margin: 8px auto 8px; overflow: visible; border: 3px solid #553732; border-radius: 48% 52% 45% 55%; background: #f4d3b7; color: #553732; box-shadow: inset 0 -7px 0 rgba(255,255,255,.28); }
 .dish-illustration:before, .dish-illustration:after { content: ''; position: absolute; border: 3px solid #553732; border-radius: 50%; background: #fffdf7; }
 .dish-illustration:before { width: 16px; height: 8px; top: 13px; left: 10px; transform: rotate(-18deg); }
@@ -107,12 +123,12 @@ button:focus { outline: 2px solid #2d4a3e; outline-offset: 3px; }
 .book-count-btn { display: inline-block; margin-top: 6px; padding: 4px 10px; background: #f2ede4; border: 1px solid #d9d3c7; border-radius: 12px; color: #8b7040; font-size: 10px; font-weight: 700; cursor: pointer; transition: background .15s, transform .1s; }
 .book-count-btn:active { transform: scale(.95); background: #e7dfd1; }
 .book-counter { display: inline-flex; align-items: center; justify-content: center; margin-top: 5px; background: #f6f3ed; border: 1px solid #ddd7cc; border-radius: 14px; padding: 2px 4px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
-.book-counter-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #c8bead; background: #fff; color: #2d4a3e; font-size: 14px; line-height: 20px; font-weight: 700; text-align: center; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .12s ease; }
-.book-counter-btn:active { transform: scale(.9); background: #e8eee9; }
+.book-counter-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #c8bead; background: #fff; color: var(--accent-color); font-size: 14px; line-height: 20px; font-weight: 700; text-align: center; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .12s ease; }
+.book-counter-btn:active { transform: scale(.9); background: var(--accent-subtle); }
 .book-btn-minus { color: #8c7653; }
-.book-btn-plus { background: #2d4a3e; color: #fff; border-color: #2d4a3e; }
-.book-btn-plus:active { background: #1e352b; color: #fff; }
-.book-counter-num { min-width: 22px; padding: 0 4px; color: #2d4a3e; font-size: 12px; font-weight: 700; text-align: center; }
+.book-btn-plus { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+.book-btn-plus:active { background: var(--accent-hover); color: #fff; }
+.book-counter-num { min-width: 22px; padding: 0 4px; color: var(--accent-color); font-size: 12px; font-weight: 700; text-align: center; }
 .page-empty { display: flex; position: relative; z-index: 1; height: 100%; min-height: 218px; align-items: center; justify-content: center; flex-direction: column; color: #a7a79e; font-size: 12px; }
 .page-empty span { color: #c7a45b; font-size: 25px; }
 .page-empty p { margin: 8px 0 0; }
@@ -121,7 +137,7 @@ button:focus { outline: 2px solid #2d4a3e; outline-offset: 3px; }
 @keyframes turn-forward { from { transform: rotateY(0); } to { transform: rotateY(-180deg); } } @keyframes turn-back { from { transform: rotateY(0); } to { transform: rotateY(180deg); } }
 .book-arrow { position: absolute; z-index: 6; top: 50%; width: 26px; height: 26px; margin-top: -15px; border: 1px solid #b59a59; border-radius: 50%; background: #fffdfa; color: #80652e; font-size: 20px; line-height: 20px; }.book-arrow:disabled { opacity: .3; }.book-arrow-left { left: -3px; }.book-arrow-right { right: -3px; }
 .book-footer { padding: 1px 7px 0; color: #92938b; font-size: 10px; }.book-footer span:first-child { color: #667467; font-weight: 700; }
-.bottom-bar { position: fixed; z-index: 5; right: 0; bottom: 0; left: 0; padding: 10px 20px; padding-bottom: calc(10px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))); background: rgba(255,255,255,.97); border-top: 1px solid #d8d4cb; }.primary-button { display: block; width: 100%; min-height: 46px; border-radius: 9px; background: #2d4a3e; box-shadow: 0 5px 12px rgba(45,74,62,.18); color: #fff; font-size: 14px; font-weight: 700; }.primary-button b { margin-left: 7px; font-size: 17px; }
+.bottom-bar { position: fixed; z-index: 5; right: 0; bottom: 0; left: 0; padding: 10px 20px; padding-bottom: calc(10px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))); background: rgba(255,255,255,.97); border-top: 1px solid #d8d4cb; }.primary-button { display: block; width: 100%; min-height: 46px; border-radius: 9px; background: var(--accent-color); box-shadow: 0 5px 12px rgba(45,74,62,.18); color: #fff; font-size: 14px; font-weight: 700; transition: background-color .2s ease; }.primary-button b { margin-left: 7px; font-size: 17px; }
 .view-complete { padding: 32px 20px 35px; background: #f5f1eb; text-align: center; overflow-y: auto; }
 .view-complete h1 { margin: 12px 0 8px; color: #1c2421; font-size: 26px; font-weight: 700; letter-spacing: -.5px; }
 .complete-note { margin: 0 0 19px; color: #7a827e; font-size: 13px; }
@@ -152,10 +168,11 @@ button:focus { outline: 2px solid #2d4a3e; outline-offset: 3px; }
 .receipt-art { position: absolute; z-index: 1; right: auto; bottom: 84px; left: 14px; display: block; width: 88px; height: 88px; margin: 0; object-fit: contain; mix-blend-mode: multiply; opacity: .82; filter: saturate(.75) contrast(.95); pointer-events: none; }
 .receipt-line { margin: 214px 0 16px; color: #8c9690; font-family: Georgia, serif; font-size: 13px; text-align: center; }
 .receipt-actions { flex: 0 0 auto; justify-content: center; padding: 0 11px 16px; background: #fff; }
-.receipt-actions button { flex: 1; max-width: 130px; margin: 0 5px; padding: 11px 9px; border: 1px solid #1e4b44; border-radius: 0; background: #fff; color: #1e4b44; font-size: 13px; }
-.receipt-actions button:first-child { background: #1e4b44; color: #fff; }
+.receipt-actions button { flex: 1; max-width: 130px; margin: 0 5px; padding: 11px 9px; border: 1px solid var(--accent-color); border-radius: 0; background: #fff; color: var(--accent-color); font-size: 13px; }
+.receipt-actions button:first-child { background: var(--accent-color); color: #fff; }
 .receipt-actions button:active { opacity: .82; }
 .restart-link { margin-top: 18px; padding: 8px; background: none; color: #7a827e; font-size: 12px; text-decoration: underline; }
+.receipt-love-quote { margin: 180px 0 16px; padding: 0 10px; color: #8c9690; font-family: Georgia, serif; font-size: 12px; line-height: 1.6; text-align: center; font-style: italic; }
 @keyframes receipt-print {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(0); }

@@ -3,6 +3,92 @@
 
   var STORAGE_KEY = 'couple-order-draft-v2';
   var zodiacData = ['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座', '双鱼座'];
+  var zodiacMeta = {
+    '白羊座': {
+      symbol: '♈',
+      dishId: 'pizza',
+      badge: '白羊挚爱',
+      fortune: '热情直率，趁热拉丝才够尽兴痛快',
+      quote: '火象的热烈与真诚，愿每一口都有心动的温度。'
+    },
+    '金牛座': {
+      symbol: '♉',
+      dishId: 'pasta',
+      badge: '金牛本命',
+      fortune: '务实挑剔，浓郁奶油抚平所有疲惫',
+      quote: '土象的温厚与深情，都融在这一餐的细水长流里。'
+    },
+    '双子座': {
+      symbol: '♊',
+      dishId: 'tea',
+      badge: '双子特调',
+      fortune: '灵感漫游，来杯清甜特调和TA碰杯',
+      quote: '风象的奇思妙想，只想和你分享生活的每一刻雀跃。'
+    },
+    '巨蟹座': {
+      symbol: '♋',
+      dishId: 'ramen',
+      badge: '巨蟹暖胃',
+      fortune: '细腻温柔，热气腾腾的最抚凡人心',
+      quote: '水象的体贴顾家，把最柔软的爱意都藏进热汤里。'
+    },
+    '狮子座': {
+      symbol: '♌',
+      dishId: 'pizza',
+      badge: '狮子霸气款',
+      fortune: '全场焦点，就要大口吃肉尽情享受',
+      quote: '坦荡又热忱的偏爱，要给TA毫无保留的大方浪漫。'
+    },
+    '处女座': {
+      symbol: '♍',
+      dishId: 'pasta',
+      badge: '处女座挑剔之选',
+      fortune: '细节至上，恰到好处的火候最显诚意',
+      quote: '不轻易许诺的严谨，化作日复一日陪你好好吃饭的笃定。'
+    },
+    '天秤座': {
+      symbol: '♎',
+      dishId: 'cake',
+      badge: '天秤纠结之选',
+      fortune: '颜值即正义，把甜蜜平衡拿捏得刚刚好',
+      quote: '告别选择困难，只要和你坐在一起就是最好的答案。'
+    },
+    '天蝎座': {
+      symbol: '♏',
+      dishId: 'ramen',
+      badge: '天蝎私藏',
+      fortune: '浓郁深邃，一口入魂的极致风味',
+      quote: '神秘深邃的专一深情，只在两人共享的一蔬一饭里盛放。'
+    },
+    '射手座': {
+      symbol: '♐',
+      dishId: 'fries',
+      badge: '射手快乐搭档',
+      fortune: '自由无拘，随手分享才是快乐的真谛',
+      quote: '热爱自由的灵魂，甘愿停留在这张只属于两人的餐桌旁。'
+    },
+    '摩羯座': {
+      symbol: '♑',
+      dishId: 'ramen',
+      badge: '摩羯务实首选',
+      fortune: '踏实笃定，碳水与暖汤带来最实在的安心',
+      quote: '不擅言辞的深沉关切，全都在默默为你准备的可口饭菜中。'
+    },
+    '水瓶座': {
+      symbol: '♒',
+      dishId: 'tea',
+      badge: '水瓶灵感专属',
+      fortune: '天马行空，特立独行也要清爽解腻',
+      quote: '在万千世界里寻觅契合灵魂，和你吃饭就是最浪漫的频道。'
+    },
+    '双鱼座': {
+      symbol: '♓',
+      dishId: 'cake',
+      badge: '双鱼浪漫治愈',
+      fortune: '软绵梦幻，把爱意化作舌尖的第一口甜',
+      quote: '极致浪漫的水象幻想，在每一口温存中写满爱的诗意。'
+    }
+  };
   var categories = ['全部', '主食', '小吃', '饮品', '甜品', '沙拉', '汤品'];
   var dishes = [
     { id: 'pasta', category: '主食', name: '奶油意面', desc: '绵密奶油，香气刚刚好', price: 28, image: 'https://core-normal.traeapi.us/api/ide/v1/text_to_image?prompt=realistic%20food%20photography%20of%20creamy%20Italian%20pasta%20with%20parmesan%20and%20parsley%20on%20a%20ceramic%20plate%2C%20warm%20restaurant%20lighting&image_size=square' },
@@ -142,6 +228,15 @@
     return art[id] || '';
   }
 
+  function updateTheme() {
+    var role = getActiveRole();
+    if (role === 'girl') {
+      document.body.classList.add('theme-girl');
+    } else {
+      document.body.classList.remove('theme-girl');
+    }
+  }
+
   function renderCategories() {
     categoryTabs.innerHTML = '';
     categories.forEach(function (category) {
@@ -152,12 +247,19 @@
     });
   }
 
+  function getZodiacBadge(zodiac) {
+    var meta = zodiacMeta[zodiac];
+    return meta ? meta.badge : '今日推荐';
+  }
+
   function renderBookPage(dish, side) {
     if (!dish) return '<div class="page-empty"><span>—</span><p>这一页暂时空着</p></div>';
     var count = state.orders[getActiveRole()][dish.id] || 0;
-    var recommended = zodiacRecommend[state.zodiac] === dish.id;
+    var meta = zodiacMeta[state.zodiac];
+    var isRecommended = meta ? meta.dishId === dish.id : (zodiacRecommend[state.zodiac] === dish.id);
+    var badgeText = getZodiacBadge(state.zodiac);
     return '<div class="book-dish" data-dish-id="' + dish.id + '">' +
-      (recommended ? '<span class="recommend-badge">今日推荐</span>' : '') +
+      (isRecommended ? '<span class="recommend-badge">' + badgeText + '</span>' : '') +
       '<span class="dish-illustration illustration-' + dish.id + '">' + getDishArt(dish.id) + '</span>' +
       '<strong>' + dish.name + '</strong><small>' + dish.desc + '</small><em>❤️ ' + dish.price + ' 爱意值</em>' +
       (count > 0 ?
@@ -172,8 +274,13 @@
   }
 
   function renderRecommendation() {
-    var dish = getDish(zodiacRecommend[state.zodiac] || 'pasta');
-    $('#recommendation').textContent = state.zodiac ? '★ ' + state.zodiac + '今日推荐：' + dish.name : '★ 今日推荐：' + dish.name;
+    var meta = zodiacMeta[state.zodiac];
+    if (meta) {
+      $('#recommendation').textContent = '★ ' + meta.symbol + ' ' + state.zodiac + ' · 今日美食签：' + meta.fortune;
+    } else {
+      var dish = getDish(zodiacRecommend[state.zodiac] || 'pasta');
+      $('#recommendation').textContent = state.zodiac ? '★ ' + state.zodiac + '今日推荐：' + dish.name : '★ 今日推荐：' + dish.name;
+    }
   }
 
   function renderDishes() {
@@ -231,40 +338,85 @@
       row.innerHTML = '<span>' + dish.name + '</span><span>×' + amount + '</span><strong>❤️ ' + (dish.price * amount) + '</strong>';
       list.appendChild(row);
     });
-    if (!hasItems) { list.innerHTML = '<p class="empty-note" id="emptyNote">还没有选择菜品<br />从下方菜单开始添加</p>'; }
+    if (!hasItems) {
+      var role = getActiveRole();
+      var emptyTip = role === 'boy' ? 'TA今天想吃什么？<br />从下方菜单开始添加' : '还没有选择菜品<br />从下方菜单开始添加';
+      list.innerHTML = '<p class="empty-note" id="emptyNote">' + emptyTip + '</p>';
+    }
   }
 
   function renderOrder() {
-    var totals = getTotals(); var roleName = getActiveRole() === 'boy' ? '男生' : '女生';
-    $('#headerMeta').textContent = roleName + ' · ' + (state.zodiac || '未选择星座');
-    $('#itemCount').textContent = totals.count + ' 道'; $('#totalPrice').textContent = '❤️ ' + totals.total;
+    updateTheme();
+    var totals = getTotals();
+    var isBoy = getActiveRole() === 'boy';
+    var meta = zodiacMeta[state.zodiac];
+    var symbol = meta ? meta.symbol + ' ' : '';
+    var headerRoleText = isBoy ? '👦🏻 男朋友点单' : '👧🏻 女朋友点单';
+    $('#headerMeta').textContent = headerRoleText + ' · ' + symbol + (state.zodiac || '未选择星座');
+    $('#itemCount').textContent = totals.count + ' 道';
+    $('#totalPrice').textContent = '❤️ ' + totals.total;
+
+    var finishBtn = $('#finishButton');
+    if (finishBtn) {
+      var btnText = isBoy ? '点好了，投喂TA' : '点好了，坐等大餐';
+      finishBtn.innerHTML = btnText + ' <b>→</b>';
+    }
+
     renderSelected();
   }
 
   function enterOrder(gender) {
     if (!state.zodiac) { window.alert('请先选择星座，再开始点单'); return; }
     state.gender = gender; state.category = '全部'; state.pageIndex = 0; saveState();
+    updateTheme();
     onboardingView.classList.add('hidden'); completeView.classList.add('hidden'); orderView.classList.remove('hidden');
     renderCategories(); renderDishes(); renderOrder();
   }
 
   function showOnboarding() {
+    updateTheme();
     orderView.classList.add('hidden'); completeView.classList.add('hidden'); onboardingView.classList.remove('hidden'); renderZodiac();
   }
 
   function clearOrders() { state.orders = { boy: {}, girl: {} }; saveState(); renderDishes(); renderOrder(); }
 
+  function getZodiacQuote(zodiac) {
+    var meta = zodiacMeta[zodiac];
+    return meta ? meta.quote : '今天这顿，值得记住。';
+  }
+
   function showComplete() {
     var totals = getTotals();
     if (!totals.count) { window.alert('请先选择一道菜'); return; }
     if (!window.confirm('确认生成这份订单吗？')) return;
+    updateTheme();
     var receiptPhoto = receiptPhotoSources[Math.floor(Math.random() * receiptPhotoSources.length)];
     receiptPhotoBg.src = receiptPhoto;
     receiptPhotoBg.setAttribute('data-source', receiptPhoto);
-    $('#finalDate').textContent = getDateText(); $('#finalZodiac').textContent = state.zodiac;
+
+    var isBoy = getActiveRole() === 'boy';
+    var meta = zodiacMeta[state.zodiac];
+    var symbol = meta ? meta.symbol + ' ' : '';
+    var roleLabel = isBoy ? '👦🏻 男生' : '👧🏻 女生';
+
+    $('#finalDate').textContent = getDateText();
+    $('#finalZodiac').textContent = roleLabel + ' · ' + symbol + state.zodiac;
+    var quoteText = getZodiacQuote(state.zodiac);
+    var finalQuoteEl = $('#finalLoveQuote');
+    if (finalQuoteEl) finalQuoteEl.textContent = quoteText;
+
     var finalList = $('#finalOrderList'); finalList.innerHTML = '';
-    Object.keys(state.orders[getActiveRole()]).forEach(function (id) { var dish = getDish(id); var amount = state.orders[getActiveRole()][id]; if (dish && amount) { var row = document.createElement('div'); row.innerHTML = '<span>' + dish.name + ' ×' + amount + '</span><strong>❤️ ' + (dish.price * amount) + '</strong>'; finalList.appendChild(row); } });
-    $('#finalTotal').textContent = '❤️ ' + totals.total; orderView.classList.add('hidden'); completeView.classList.remove('hidden');
+    Object.keys(state.orders[getActiveRole()]).forEach(function (id) {
+      var dish = getDish(id);
+      var amount = state.orders[getActiveRole()][id];
+      if (dish && amount) {
+        var row = document.createElement('div');
+        row.innerHTML = '<span>' + dish.name + ' ×' + amount + '</span><strong>❤️ ' + (dish.price * amount) + '</strong>';
+        finalList.appendChild(row);
+      }
+    });
+    $('#finalTotal').textContent = '❤️ ' + totals.total;
+    orderView.classList.add('hidden'); completeView.classList.remove('hidden');
     var receiptCard = $('#receiptCard');
     receiptCard.classList.add('receipt-replay');
     window.requestAnimationFrame(function () {
@@ -298,9 +450,20 @@
     var left = x(contentRect) + 16; var right = x(contentRect) + contentRect.width - 16; context.textAlign = 'left'; context.fillStyle = '#2c3531'; context.font = '700 14px monospace'; context.fillText('OUR TABLE', left, y(contentRect) + 38); context.textAlign = 'right'; context.fillStyle = '#8c9690'; context.font = '10px sans-serif'; context.fillText('纪念小票', right, y(contentRect) + 38);
     context.strokeStyle = '#e4ece8'; context.beginPath(); context.moveTo(left, y(contentRect) + 58); context.lineTo(right, y(contentRect) + 58); context.stroke();
     context.textAlign = 'left'; context.font = '11px monospace'; context.fillText($('#finalDate').textContent, left, y(contentRect) + 88); context.textAlign = 'right'; context.fillText($('#finalZodiac').textContent, right, y(contentRect) + 88);
-    var rowY = y(contentRect) + 126; context.textAlign = 'left'; context.fillStyle = '#2c3531'; context.font = '12px monospace'; var rows = $('#finalOrderList').children; for (var i = 0; i < rows.length; i += 1) { if (rowY > y(contentRect) + contentRect.height - 20) break; context.fillText(rows[i].firstChild.textContent, left, rowY); context.textAlign = 'right'; context.fillStyle = '#c6534d'; context.font = '700 12px sans-serif'; context.fillText(rows[i].lastChild.textContent, right, rowY); context.textAlign = 'left'; context.fillStyle = '#2c3531'; context.font = '12px monospace'; rowY += 40; }
+    var rowY = y(contentRect) + 126; context.textAlign = 'left'; context.fillStyle = '#2c3531'; context.font = '12px monospace'; var rows = $('#finalOrderList').children; for (var i = 0; i < rows.length; i += 1) { if (rowY > y(contentRect) + contentRect.height - 50) break; context.fillText(rows[i].firstChild.textContent, left, rowY); context.textAlign = 'right'; context.fillStyle = '#c6534d'; context.font = '700 12px sans-serif'; context.fillText(rows[i].lastChild.textContent, right, rowY); context.textAlign = 'left'; context.fillStyle = '#2c3531'; context.font = '12px monospace'; rowY += 40; }
     context.strokeStyle = '#e4ece8'; context.beginPath(); context.moveTo(left, rowY - 18); context.lineTo(right, rowY - 18); context.stroke(); context.fillStyle = '#7a827e'; context.font = '12px monospace'; context.fillText('总计爱意', left, rowY + 20); context.textAlign = 'right'; context.fillStyle = '#c6534d'; context.font = '700 27px Georgia'; context.fillText($('#finalTotal').textContent, right, rowY + 25);
-    context.textAlign = 'center'; context.fillStyle = '#8c9690'; context.font = '13px Georgia'; context.fillText('今天这顿，值得记住。', x(contentRect) + contentRect.width / 2, y(contentRect) + contentRect.height - 42);
+    
+    var quote = getZodiacQuote(state.zodiac);
+    context.textAlign = 'center'; context.fillStyle = '#8c9690'; context.font = 'italic 11px Georgia, serif';
+    if (quote.length > 22) {
+      var mid = Math.ceil(quote.length / 2);
+      var line1 = quote.slice(0, mid);
+      var line2 = quote.slice(mid);
+      context.fillText(line1, x(contentRect) + contentRect.width / 2, y(contentRect) + contentRect.height - 44);
+      context.fillText(line2, x(contentRect) + contentRect.width / 2, y(contentRect) + contentRect.height - 28);
+    } else {
+      context.fillText(quote, x(contentRect) + contentRect.width / 2, y(contentRect) + contentRect.height - 36);
+    }
     return canvas.toDataURL('image/png');
   }
 
